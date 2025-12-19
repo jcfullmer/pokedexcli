@@ -5,12 +5,15 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/jcfullmer/pokedexcli/Types"
+	pokeapi "github.com/jcfullmer/pokedexcli/internal/PokeAPI"
 )
 
 type cliCommand struct {
 	name        string
 	description string
-	callback    func() error
+	callback    func(*Types.Config) error
 }
 
 func GetCommands() map[string]cliCommand {
@@ -25,6 +28,11 @@ func GetCommands() map[string]cliCommand {
 			description: "Display a help message",
 			callback:    commandHelp,
 		},
+		"map": {
+			name:        "map",
+			description: "Get Location Areas",
+			callback:    pokeapi.CommandMap,
+		},
 	}
 }
 
@@ -36,7 +44,11 @@ func cleanInput(text string) []string {
 
 func PokedexInput() {
 	input := bufio.NewScanner(os.Stdin)
-	for true {
+	Conf := &Types.Config{
+		Next:     "",
+		Previous: "",
+	}
+	for {
 		fmt.Print("Pokedex > ")
 		input.Scan()
 		words := cleanInput(input.Text())
@@ -46,7 +58,7 @@ func PokedexInput() {
 		command := words[0]
 		val, ok := GetCommands()[command]
 		if ok {
-			err := val.callback()
+			err := val.callback(Conf)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -56,13 +68,13 @@ func PokedexInput() {
 	}
 }
 
-func commandExit() error {
+func commandExit(conf *Types.Config) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil
 }
 
-func commandHelp() error {
+func commandHelp(conf *Types.Config) error {
 	fmt.Println("Welcome to the Pokedex!\nUsage:")
 	for _, command := range GetCommands() {
 		fmt.Printf("%v: %v\n", command.name, command.description)
