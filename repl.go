@@ -8,6 +8,7 @@ import (
 
 	"github.com/jcfullmer/pokedexcli/Types"
 	pokeapi "github.com/jcfullmer/pokedexcli/internal/PokeAPI"
+	Pokecache "github.com/jcfullmer/pokedexcli/internal/pokecache"
 )
 
 type cliCommand struct {
@@ -52,6 +53,7 @@ func PokedexInput() {
 	Conf := &Types.Config{
 		Next:     Types.PokeApiLocationArea,
 		Previous: "",
+		Cache:    Pokecache.NewCache(),
 	}
 	for {
 		fmt.Print("Pokedex > ")
