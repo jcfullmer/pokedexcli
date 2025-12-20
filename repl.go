@@ -33,6 +33,11 @@ func GetCommands() map[string]cliCommand {
 			description: "Get Location Areas",
 			callback:    pokeapi.CommandMap,
 		},
+		"mapb": {
+			name:        "mapb",
+			description: "Get Previous Location Areas",
+			callback:    pokeapi.CommandMapB,
+		},
 	}
 }
 
@@ -45,7 +50,7 @@ func cleanInput(text string) []string {
 func PokedexInput() {
 	input := bufio.NewScanner(os.Stdin)
 	Conf := &Types.Config{
-		Next:     "",
+		Next:     Types.PokeApiLocationArea,
 		Previous: "",
 	}
 	for {
