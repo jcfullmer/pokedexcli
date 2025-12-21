@@ -65,7 +65,6 @@ func CommandExplore(conf *Types.Config, location string) error {
 
 func CommandCatch(conf *Types.Config, pokemon string) error {
 	pokemonURL := Types.PokeApiLocationArea + "pokemon/" + pokemon
-	fmt.Println(pokemonURL)
 	resBytes, err := ReqToJsonStruct(pokemonURL, conf)
 	if err != nil {
 		return err
@@ -81,6 +80,7 @@ func CommandCatch(conf *Types.Config, pokemon string) error {
 			return fmt.Errorf("you caught the pokemon, but you already had one so you had to release it.")
 		} else {
 			fmt.Printf("%v was caught!\n", pokemonStruct.Name)
+			fmt.Println("You may now inspect it with the inspect command.")
 			conf.CaughtPokemon[pokemonStruct.Name] = pokemonStruct
 		}
 	} else {
@@ -104,6 +104,18 @@ func CommandInspect(conf *Types.Config, pokemon string) error {
 	fmt.Println("Types:")
 	for _, t := range poke.Types {
 		fmt.Printf("	-%v\n", t.Type.Name)
+	}
+	return nil
+}
+
+func CommandPokedex(conf *Types.Config, _ string) error {
+	if len(conf.CaughtPokemon) <= 0 {
+		fmt.Println("You haven't caught any pokemon yet.")
+		return nil
+	}
+	fmt.Println("Your Pokedex:")
+	for _, p := range conf.CaughtPokemon {
+		fmt.Printf("- %v\n", p.Name)
 	}
 	return nil
 }
