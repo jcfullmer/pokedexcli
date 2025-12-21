@@ -1,3 +1,4 @@
 package Types
 
-const PokeApiLocationArea = "https://pokeapi.co/api/v2/location-area/"
+const PokeApiLocationArea = "https://pokeapi.co/api/v2/"
+const RollDifficulty = 300

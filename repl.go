@@ -14,7 +14,7 @@ import (
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*Types.Config) error
+	callback    func(*Types.Config, string) error
 }
 
 func GetCommands() map[string]cliCommand {
@@ -39,6 +39,21 @@ func GetCommands() map[string]cliCommand {
 			description: "Get Previous Location Areas",
 			callback:    pokeapi.CommandMapB,
 		},
+		"explore": {
+			name:        "explore",
+			description: "View more information about specific locations, ex. explore pastoria-city-area",
+			callback:    pokeapi.CommandExplore,
+		},
+		"catch": {
+			name:        "catch",
+			description: "Attempt to catch a pokemon, ex. catch sandshrew",
+			callback:    pokeapi.CommandCatch,
+		},
+		"inspect": {
+			name:        "inspect",
+			description: "Inspect the details of a caught pokemon, ex. inspect sandshrew",
+			callback:    pokeapi.CommandInspect,
+		},
 	}
 }
 
@@ -51,9 +66,10 @@ func cleanInput(text string) []string {
 func PokedexInput() {
 	input := bufio.NewScanner(os.Stdin)
 	Conf := &Types.Config{
-		Next:     Types.PokeApiLocationArea,
-		Previous: "",
-		Cache:    Pokecache.NewCache(),
+		Next:          Types.PokeApiLocationArea + "location-area/",
+		Previous:      "",
+		Cache:         Pokecache.NewCache(),
+		CaughtPokemon: map[string]Types.Pokemon{},
 	}
 	for {
 		fmt.Print("Pokedex > ")
@@ -63,9 +79,13 @@ func PokedexInput() {
 			continue
 		}
 		command := words[0]
+		var InArgs string
+		if len(words) > 1 {
+			InArgs = words[1]
+		}
 		val, ok := GetCommands()[command]
 		if ok {
-			err := val.callback(Conf)
+			err := val.callback(Conf, InArgs)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -75,13 +95,13 @@ func PokedexInput() {
 	}
 }
 
-func commandExit(conf *Types.Config) error {
+func commandExit(conf *Types.Config, _ string) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil
 }
 
-func commandHelp(conf *Types.Config) error {
+func commandHelp(conf *Types.Config, _ string) error {
 	fmt.Println("Welcome to the Pokedex!\nUsage:")
 	for _, command := range GetCommands() {
 		fmt.Printf("%v: %v\n", command.name, command.description)
