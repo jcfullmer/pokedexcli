@@ -64,6 +64,10 @@ func CommandExplore(conf *Types.Config, location string) error {
 }
 
 func CommandCatch(conf *Types.Config, pokemon string) error {
+	if pokemon == "" {
+		fmt.Println("please enter a valid pokemon name")
+		return nil
+	}
 	pokemonURL := Types.PokeApiLocationArea + "pokemon/" + pokemon
 	resBytes, err := ReqToJsonStruct(pokemonURL, conf)
 	if err != nil {
